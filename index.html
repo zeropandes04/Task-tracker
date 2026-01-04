@@ -223,9 +223,9 @@
         .success-message {
             background: #d1fae5;
             color: #065f46;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-md);
             display: none;
             text-align: center;
             font-weight: 600;
@@ -241,23 +241,23 @@
         .error-message {
             background: #fee2e2;
             color: #991b1b;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-md);
             display: none;
             text-align: center;
         }
 
         .progress-bar {
             background: #e5e7eb;
-            height: 8px;
+            height: var(--spacing-sm);
             border-radius: 4px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-md);
         }
 
         .progress-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-color);
             height: 100%;
             transition: width 0.3s ease;
         }
@@ -268,7 +268,7 @@
             }
 
             .header, .card {
-                padding: 16px;
+                padding: var(--spacing-md);
             }
 
             .button-group {
