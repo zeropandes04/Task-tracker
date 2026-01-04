@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Task Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+
+        .header .date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .task-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .task-info h2 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input[type="url"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .image-preview {
+            margin-top: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-complete {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            .header, .card {
+                padding: 16px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Weekly Task Tracker</h1>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <div class="card">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="success-message" id="successMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div id="loadingState" class="loading">Loading your tasks...</div>
+
+        <div id="taskForm" style="display: none;">
+            <div class="card">
+                <div class="task-header">
+                    <div class="task-number" id="taskNumber">1</div>
+                    <div class="task-info">
+                        <h2 id="taskName">Loading...</h2>
+                        <span class="status-badge" id="statusBadge">In Progress</span>
+                    </div>
+                </div>
+
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="progressNotes">Progress Notes</label>
+                        <textarea 
+                            id="progressNotes" 
+                            placeholder="What progress have you made on this task?"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="referenceLink">Reference Link (optional)</label>
+                        <input 
+                            type="url" 
+                            id="referenceLink" 
+                            placeholder="https://..."
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="imageUpload">Upload Image (optional)</label>
+                        <input 
+                            type="file" 
+                            id="imageUpload" 
+                            accept="image/*"
+                        >
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="Preview">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-save">💾 Save Progress</button>
+                        <button type="button" class="btn-complete" id="completeBtn">✅ Mark Complete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - YOU'LL REPLACE THESE WITH YOUR ZAPIER WEBHOOK URLs
+        const WEBHOOK_SAVE = 'YOUR_ZAPIER_WEBHOOK_URL_FOR_SAVE';
+        const WEBHOOK_COMPLETE = 'YOUR_ZAPIER_WEBHOOK_URL_FOR_COMPLETE';
+        const WEBHOOK_GET_CURRENT = 'YOUR_ZAPIER_WEBHOOK_URL_TO_GET_CURRENT_TASK';
+
+        // Current task data
+        let currentTask = null;
+        let allTasks = [];
+
+        // Initialize
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        // Image preview
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Load current task
+        async function loadCurrentTask() {
+            try {
+                // For demo purposes, we'll simulate the task data
+                // In production, this would fetch from Notion via Zapier webhook
+                simulateTaskLoad();
+            } catch (error) {
+                showError('Failed to load tasks. Please refresh the page.');
+            }
+        }
+
+        function simulateTaskLoad() {
+            // Demo data - in production this comes from Notion
+            allTasks = [
+                { order: 1, name: 'Resolution task tracker', status: 'In Progress' },
+                { order: 2, name: 'Model mapping', status: 'Not Started' },
+                { order: 3, name: 'Deep research', status: 'Not Started' },
+                { order: 4, name: 'Data analyst', status: 'Not Started' },
+                { order: 5, name: 'Visual reasoning', status: 'Not Started' },
+                { order: 6, name: 'Information pipelines', status: 'Not Started' },
+                { order: 7, name: 'Automation: distribution', status: 'Not Started' },
+                { order: 8, name: 'Automation: productivity', status: 'Not Started' },
+                { order: 9, name: 'Context engineering', status: 'Not Started' },
+                { order: 10, name: 'Build an AI app', status: 'Not Started' },
+                { order: 11, name: 'Agent evaluation gauntlet', status: 'Not Started' }
+            ];
+
+            currentTask = allTasks.find(t => t.status === 'In Progress') || allTasks[0];
+            displayTask();
+        }
+
+        function displayTask() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('taskForm').style.display = 'block';
+            
+            document.getElementById('taskNumber').textContent = currentTask.order;
+            document.getElementById('taskName').textContent = currentTask.name;
+            
+            const completedCount = allTasks.filter(t => t.status === 'Completed').length;
+            const progress = (completedCount / allTasks.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Save progress
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const progressNotes = document.getElementById('progressNotes').value;
+            const referenceLink = document.getElementById('referenceLink').value;
+            const imageFile = document.getElementById('imageUpload').files[0];
+
+            const data = {
+                taskOrder: currentTask.order,
+                taskName: currentTask.name,
+                progressNotes: progressNotes,
+                referenceLink: referenceLink,
+                action: 'save',
+                timestamp: new Date().toISOString()
+            };
+
+            // If image is selected, convert to base64
+            if (imageFile) {
+                const base64 = await fileToBase64(imageFile);
+                data.image = base64;
+                data.imageName = imageFile.name;
+            }
+
+            try {
+                // In production, send to Zapier webhook
+                // await fetch(WEBHOOK_SAVE, {
+                //     method: 'POST',
+                //     body: JSON.stringify(data),
+                //     headers: { 'Content-Type': 'application/json' }
+                // });
+                
+                showSuccess('Progress saved successfully! ✨');
+                clearForm();
+            } catch (error) {
+                showError('Failed to save progress. Please try again.');
+            }
+        });
+
+        // Complete task
+        document.getElementById('completeBtn').addEventListener('click', async function() {
+            const progressNotes = document.getElementById('progressNotes').value;
+            
+            if (!progressNotes.trim()) {
+                showError('Please add progress notes before completing the task.');
+                return;
+            }
+
+            const referenceLink = document.getElementById('referenceLink').value;
+            const imageFile = document.getElementById('imageUpload').files[0];
+
+            const data = {
+                taskOrder: currentTask.order,
+                taskName: currentTask.name,
+                progressNotes: progressNotes,
+                referenceLink: referenceLink,
+                action: 'complete',
+                timestamp: new Date().toISOString(),
+                completedDate: new Date().toISOString()
+            };
+
+            if (imageFile) {
+                const base64 = await fileToBase64(imageFile);
+                data.image = base64;
+                data.imageName = imageFile.name;
+            }
+
+            try {
+                // In production, send to Zapier webhook
+                // await fetch(WEBHOOK_COMPLETE, {
+                //     method: 'POST',
+                //     body: JSON.stringify(data),
+                //     headers: { 'Content-Type': 'application/json' }
+                // });
+                
+                // Simulate task completion
+                currentTask.status = 'Completed';
+                const nextTask = allTasks.find(t => t.order === currentTask.order + 1);
+                
+                if (nextTask) {
+                    nextTask.status = 'In Progress';
+                    currentTask = nextTask;
+                    showSuccess(`Task completed! 🎉 Moving to task ${nextTask.order}...`);
+                    setTimeout(() => {
+                        displayTask();
+                        clearForm();
+                    }, 2000);
+                } else {
+                    showSuccess('🎉 Congratulations! All tasks completed!');
+                }
+            } catch (error) {
+                showError('Failed to complete task. Please try again.');
+            }
+        });
+
+        // Helper functions
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        function clearForm() {
+            document.getElementById('progressNotes').value = '';
+            document.getElementById('referenceLink').value = '';
+            document.getElementById('imageUpload').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        // Load task on page load
+        loadCurrentTask();
+    </script>
+</body>
+</html>
