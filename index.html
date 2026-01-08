@@ -446,11 +446,11 @@
 
             try {
                 // In production, send to Zapier webhook
-                // await fetch(WEBHOOK_SAVE, {
-                //     method: 'POST',
-                //     body: JSON.stringify(data),
-                //     headers: { 'Content-Type': 'application/json' }
-                // });
+                await fetch(WEBHOOK_SAVE, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+                });
                 
                 showSuccess('Progress saved successfully! ✨');
                 clearForm();
@@ -489,11 +489,11 @@
 
             try {
                 // In production, send to Zapier webhook
-                // await fetch(WEBHOOK_COMPLETE, {
-                //     method: 'POST',
-                //     body: JSON.stringify(data),
-                //     headers: { 'Content-Type': 'application/json' }
-                // });
+               await fetch(WEBHOOK_COMPLETE, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+                });
                 
                 // Simulate task completion
                 currentTask.status = 'Completed';
