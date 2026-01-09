@@ -141,8 +141,7 @@
             border-color: var(--secondary-color);
         }
 
-        .form-group input[type="url"],
-        .form-group input[type="file"] {
+        .form-group input[type="url"] {
             width: 100%;
             padding: 12px;
             border: 2px solid #e5e7eb;
@@ -155,19 +154,6 @@
         .form-group input[type="url"]:focus {
             outline: none;
             border-color: var(--secondary-color);
-        }
-
-        .image-preview {
-            margin-top: 12px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            display: none;
-        }
-
-        .image-preview img {
-            width: 100%;
-            height: auto;
-            display: block;
         }
 
         .button-group {
@@ -317,23 +303,11 @@
 
                     <div class="form-group">
                         <label for="referenceLink">Reference Link (optional)</label>
-                        <input 
-                            type="url" 
-                            id="referenceLink" 
+                        <input
+                            type="url"
+                            id="referenceLink"
                             placeholder="https://..."
                         >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="imageUpload">Upload Image (optional)</label>
-                        <input 
-                            type="file" 
-                            id="imageUpload" 
-                            accept="image/*"
-                        >
-                        <div class="image-preview" id="imagePreview">
-                            <img id="previewImg" src="" alt="Preview">
-                        </div>
                     </div>
 
                     <div class="button-group">
@@ -362,19 +336,6 @@
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
-        });
-
-        // Image preview
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImg').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
         });
 
         // Load current task
@@ -426,7 +387,6 @@
             
             const progressNotes = document.getElementById('progressNotes').value;
             const referenceLink = document.getElementById('referenceLink').value;
-            const imageFile = document.getElementById('imageUpload').files[0];
 
             const data = {
                 taskOrder: currentTask.order,
@@ -436,13 +396,6 @@
                 action: 'save',
                 timestamp: new Date().toISOString()
             };
-
-            // If image is selected, convert to base64
-            if (imageFile) {
-                const base64 = await fileToBase64(imageFile);
-                data.image = base64;
-                data.imageName = imageFile.name;
-            }
 
             try {
                 // In production, send to Zapier webhook
@@ -469,7 +422,6 @@
             }
 
             const referenceLink = document.getElementById('referenceLink').value;
-            const imageFile = document.getElementById('imageUpload').files[0];
 
             const data = {
                 taskOrder: currentTask.order,
@@ -480,12 +432,6 @@
                 timestamp: new Date().toISOString(),
                 completedDate: new Date().toISOString()
             };
-
-            if (imageFile) {
-                const base64 = await fileToBase64(imageFile);
-                data.image = base64;
-                data.imageName = imageFile.name;
-            }
 
             try {
                 // In production, send to Zapier webhook
@@ -516,15 +462,6 @@
         });
 
         // Helper functions
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
         function showSuccess(message) {
             const el = document.getElementById('successMessage');
             el.textContent = message;
@@ -542,8 +479,6 @@
         function clearForm() {
             document.getElementById('progressNotes').value = '';
             document.getElementById('referenceLink').value = '';
-            document.getElementById('imageUpload').value = '';
-            document.getElementById('imagePreview').style.display = 'none';
         }
 
         // Load task on page load
